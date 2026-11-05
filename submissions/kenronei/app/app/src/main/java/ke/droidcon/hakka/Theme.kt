@@ -1,11 +1,16 @@
-package ke.droidcon.hakka.otp
+package ke.droidcon.hakka
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-/** Mirrors `assets/colours.json` → `otp.light` / `otp.dark`. */
+/** Mirrors `otp.light` / `otp.dark` in assets/colours.json (ARGB hex). */
 @Immutable
 data class OtpColors(
     val sheet: Color,
@@ -67,6 +72,25 @@ val DarkOtpColors = OtpColors(
     error = Color(0xFFEF9A9A),
 )
 
+val LocalOtpColors = staticCompositionLocalOf { LightOtpColors }
+
 @Composable
-fun otpColors(darkTheme: Boolean = isSystemInDarkTheme()): OtpColors =
-    if (darkTheme) DarkOtpColors else LightOtpColors
+fun HakkaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val otp = if (darkTheme) DarkOtpColors else LightOtpColors
+    val scheme = if (darkTheme) {
+        darkColorScheme(
+            primary = otp.buttonBg, onPrimary = otp.buttonText,
+            surface = otp.sheet, onSurface = otp.textPrimary,
+            background = otp.sheet, onBackground = otp.textPrimary, error = otp.error,
+        )
+    } else {
+        lightColorScheme(
+            primary = otp.buttonBg, onPrimary = otp.buttonText,
+            surface = otp.sheet, onSurface = otp.textPrimary,
+            background = otp.sheet, onBackground = otp.textPrimary, error = otp.error,
+        )
+    }
+    CompositionLocalProvider(LocalOtpColors provides otp) {
+        MaterialTheme(colorScheme = scheme, content = content)
+    }
+}
