@@ -1,1 +1,2 @@
 - Kenneth Murerwa (@kkmurerwa)
+- Keronei Lincoln (@keronei)
