@@ -1,39 +1,30 @@
 package ke.droidcon.hakka
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import hakka.composeapp.generated.resources.Res
-import hakka.composeapp.generated.resources.thamani_logo
-import org.jetbrains.compose.resources.painterResource
+import ke.droidcon.hakka.otp.DemoOtpVerifier
+import ke.droidcon.hakka.otp.OtpScreen
+import ke.droidcon.hakka.otp.OtpState
+import ke.droidcon.hakka.theme.OtpPalette
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
-    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.thamani_logo),
-                    contentDescription = "Thamani logo",
-                    modifier = Modifier.size(64.dp),
-                )
-                Text(AppInfo.NAME, style = MaterialTheme.typography.headlineSmall)
-            }
-        }
+    val dark = isSystemInDarkTheme()
+    val palette by produceState<OtpPalette?>(initialValue = null) {
+        value = OtpPalette.parse(Res.readBytes("files/colours.json").decodeToString())
+    }
+    val state = remember { OtpState(verify = DemoOtpVerifier::verify) }
+
+    MaterialTheme(colorScheme = if (dark) darkColorScheme() else lightColorScheme()) {
+        palette?.let { OtpScreen(state, it.forTheme(dark)) }
     }
 }
