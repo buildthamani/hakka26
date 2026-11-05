@@ -638,6 +638,16 @@
     "stack": "unknown"
   },
   {
+    "team": "hakka-otp",
+    "score": null,
+    "breakdown": null,
+    "graded_at": null,
+    "flags": [],
+    "status": "building",
+    "pr": 37,
+    "updated_at": "2026-11-05T21:16:15Z"
+  },
+  {
     "team": "kkmurerwa",
     "score": null,
     "breakdown": null,
