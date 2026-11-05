@@ -138,9 +138,9 @@
     },
     "graded_at": "2026-11-05T08:43:47Z",
     "flags": [],
-    "status": "scored",
+    "status": "building",
     "pr": 16,
-    "updated_at": "2026-11-05T08:43:47Z",
+    "updated_at": "2026-11-05T14:06:59Z",
     "stack": "react-native"
   },
   {
