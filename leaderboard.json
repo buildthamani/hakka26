@@ -374,9 +374,9 @@
     "flags": [
       "screenshot_mismatch"
     ],
-    "status": "scored",
+    "status": "building",
     "pr": 32,
-    "updated_at": "2026-11-05T14:43:19Z",
+    "updated_at": "2026-11-05T14:47:43Z",
     "stack": "ios"
   },
   {
