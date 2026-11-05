@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -60,31 +61,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
-/** Palette from assets/colours.json ("otp" block). */
-private class OtpColors(
-    val sheet: Color, val scrim: Color, val textPrimary: Color, val textSecondary: Color,
-    val filledBg: Color, val filledText: Color, val focusedBg: Color, val focusedOutline: Color,
-    val emptyBg: Color, val emptyOutline: Color, val placeholder: Color,
-    val buttonBg: Color, val buttonText: Color, val buttonDisabledBg: Color,
-    val link: Color, val success: Color, val error: Color,
-)
-
-private val LightColors = OtpColors(
-    Color(0xFFFFFFFF), Color(0x99000000), Color(0xFF111111), Color(0xFF5F6368),
-    Color(0xFF12361B), Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0xFF111111),
-    Color(0xFFF1F1F1), Color(0xFFE0E0E0), Color(0xFF9E9E9E),
-    Color(0xFF12361B), Color(0xFFFFFFFF), Color(0xFFC9D1CB),
-    Color(0xFF12361B), Color(0xFF1B7F3A), Color(0xFFC62828),
-)
-
-private val DarkColors = OtpColors(
-    Color(0xFF161A17), Color(0xCC000000), Color(0xFFF5F5F5), Color(0xFFB0B5B1),
-    Color(0xFF2E7D45), Color(0xFFFFFFFF), Color(0xFF161A17), Color(0xFFF5F5F5),
-    Color(0xFF262B27), Color(0xFF353B36), Color(0xFF6F7570),
-    Color(0xFF2E7D45), Color(0xFFFFFFFF), Color(0xFF2A302B),
-    Color(0xFF7BC795), Color(0xFF7BC795), Color(0xFFEF9A9A),
-)
-
 @Composable
 fun OtpScreen(modifier: Modifier = Modifier) {
     val c = if (isSystemInDarkTheme()) DarkColors else LightColors
@@ -106,14 +82,14 @@ fun OtpScreen(modifier: Modifier = Modifier) {
     Box(modifier.fillMaxSize().background(c.scrim)) {
         Surface(
             color = c.sheet,
-            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp),
+            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(12.dp),
         ) {
             Column(
                 Modifier.navigationBarsPadding().imePadding().padding(horizontal = 24.dp, vertical = 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(painterResource(R.drawable.thamani_logo), "Thamani logo", Modifier.size(48.dp))
+                Image(painterResource(if (isSystemInDarkTheme()) R.drawable.thamani_logo_white else R.drawable.thamani_logo), "Thamani logo", Modifier.size(56.dp))
                 Text(
                     "Enter your code", color = c.textPrimary, fontSize = 22.sp,
                     fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 16.dp),
@@ -125,7 +101,7 @@ fun OtpScreen(modifier: Modifier = Modifier) {
 
                 Row(
                     Modifier.padding(top = 24.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
                 ) {
                     repeat(OtpState.LENGTH) { i ->
                         DigitBox(
@@ -159,75 +135,20 @@ fun OtpScreen(modifier: Modifier = Modifier) {
                     )
                 }
 
+                Spacer(Modifier.height(96.dp))
                 Button(
                     onClick = { state = state.submit() },
                     enabled = state.canSubmit,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = c.buttonBg, contentColor = c.buttonText,
                         disabledContainerColor = c.buttonDisabledBg, disabledContentColor = c.textSecondary,
                     ),
-                    modifier = Modifier.padding(top = 20.dp).fillMaxWidth().height(52.dp).testTag("otp_submit"),
+                    modifier = Modifier.fillMaxWidth().height(56.dp).testTag("otp_submit"),
                 ) { Text("Submit", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
             }
         }
     }
-}
-
-@Composable
-private fun DigitBox(
-    index: Int,
-    state: OtpState,
-    colors: OtpColors,
-    requester: FocusRequester,
-    onInput: (String) -> Unit,
-    onBackspace: () -> Unit,
-    onFocused: () -> Unit,
-) {
-    val digit = state.digits[index]
-    var focused by remember { mutableStateOf(false) }
-    val bg = when {
-        focused -> colors.focusedBg
-        digit != null -> colors.filledBg
-        else -> colors.emptyBg
-    }
-    val border = when {
-        focused -> BorderStroke(2.dp, colors.focusedOutline)
-        digit != null -> null
-        else -> BorderStroke(1.dp, colors.emptyOutline)
-    }
-    val textColor = if (focused) colors.textPrimary else colors.filledText
-
-    BasicTextField(
-        value = digit?.toString() ?: "",
-        onValueChange = onInput,
-        singleLine = true,
-        textStyle = TextStyle(color = textColor, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center),
-        cursorBrush = SolidColor(Color.Transparent),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier
-            .size(46.dp)
-            .clip(CircleShape)
-            .background(bg, CircleShape)
-            .then(if (border != null) Modifier.border(border, CircleShape) else Modifier)
-            .focusRequester(requester)
-            .onFocusChanged { focused = it.isFocused; if (it.isFocused) onFocused() }
-            .onPreviewKeyEvent { e ->
-                if (e.type == KeyEventType.KeyDown && e.key == Key.Backspace && digit == null) {
-                    onBackspace(); true
-                } else false
-            }
-            .testTag("otp_digit_${index + 1}")
-            .semantics { contentDescription = "Digit ${index + 1} of ${OtpState.LENGTH}" },
-        decorationBox = { inner ->
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                if (digit == null && !focused) {
-                    Text("•", color = colors.placeholder, fontSize = 20.sp)
-                }
-                inner()
-            }
-        },
-    )
 }
 
 @Preview
