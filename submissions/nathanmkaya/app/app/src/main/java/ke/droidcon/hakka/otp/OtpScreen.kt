@@ -81,13 +81,12 @@ fun OtpSheet(state: OtpState, onAction: (OtpAction) -> Unit, modifier: Modifier 
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(16.dp)
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f)
-                .clip(RoundedCornerShape(32.dp))
+                .fillMaxHeight(0.88f)
+                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
                 .background(colors.sheet)
-                .padding(horizontal = 20.dp, vertical = 28.dp),
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(horizontal = 24.dp, vertical = 28.dp),
         ) {
             Column(
                 modifier = Modifier

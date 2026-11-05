@@ -80,8 +80,8 @@ fun OtpInput(
 private data class DigitBoxStyle(val background: Color, val outline: Color, val outlineWidth: Dp, val content: Color)
 
 private fun OtpColors.digitBoxStyle(digit: Char?, isFocused: Boolean): DigitBoxStyle = when {
-    isFocused -> DigitBoxStyle(digitFocusedBg, digitFocusedOutline, 1.5.dp, textPrimary)
     digit != null -> DigitBoxStyle(digitFilledBg, digitFilledBg, 1.dp, digitFilledText)
+    isFocused -> DigitBoxStyle(digitFocusedBg, digitFocusedOutline, 1.5.dp, textPrimary)
     else -> DigitBoxStyle(digitEmptyBg, digitEmptyOutline, 1.dp, digitPlaceholder)
 }
 
