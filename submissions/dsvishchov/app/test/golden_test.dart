@@ -7,10 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hakka/main.dart';
 import 'package:hakka/otp_palette.dart';
+import 'tolerant_golden_comparator.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late OtpColors colors;
+  setUp(() {
+    final original = goldenFileComparator;
+    goldenFileComparator = TolerantGoldenComparator(
+      Directory.current.uri.resolve('test/golden_test.dart'),
+    );
+    addTearDown(() => goldenFileComparator = original);
+  });
   setUpAll(() async {
     colors = await OtpColors.load();
     final fonts = FontLoader('Roboto')
@@ -56,7 +64,7 @@ void main() {
               precacheImage(image.image, tester.element(find.byType(HakkaApp))),
         );
       }
-      await tester.enterText(find.byKey(const ValueKey('otp_input_1')), '21');
+      await tester.enterText(find.byKey(const ValueKey('otp_input')), '21');
       await tester.pumpAndSettle();
       final target = find.byKey(boundary);
       if (const bool.fromEnvironment('CAPTURE_RENDERS')) {

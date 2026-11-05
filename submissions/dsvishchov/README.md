@@ -15,8 +15,8 @@ error, clear the input and focus its first box. This is the local verification
 behavior requested in Issue #1; resend restarts the 30-second local cooldown.
 
 Six independently editable fields support number keyboards, digit replacement,
-mixed-text paste and both hardware/IME backspace. The input controller is the only
-source of digit state. Accessibility exposes only actual digits, with “Digit N of
+mixed-text paste and both hardware/IME backspace. One TextEditingController stores the code and selection; the six cells
+render that buffer, without sentinel characters or mirrored controllers. Accessibility exposes only actual digits, with “Digit N of
 6” labels and set-text actions; status is a live region and countdown ticks are not.
 Each required test ID is both a ValueKey and a Semantics identifier.
 
@@ -36,3 +36,8 @@ Linux CI and a human TalkBack/VoiceOver listening pass have not been verified.
 
 The Gradle version is unchanged; its binary distribution avoids downloading the
 optional sources/documentation in the larger all distribution.
+
+The input keeps a contiguous code: selecting a later empty cell uses the first
+empty position; deleting a middle digit shifts the suffix left. Golden tests allow
+up to 5% changed pixels. After this refactor, all 15 tests and analysis pass locally;
+the APK was not rebuilt for this update.

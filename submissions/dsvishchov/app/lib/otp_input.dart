@@ -19,76 +19,45 @@ class OtpInput extends StatefulWidget {
 }
 
 class _OtpInputState extends State<OtpInput> {
-  // Mobile IMEs need not send physical Backspace events. An invisible sentinel
-  // makes deletion from an empty field observable through editing updates.
-  // It is never part of the OTP, its painted value, or accessibility semantics.
-  static const _sentinel = '\u200B';
-  final _fields = List.generate(
-    6,
-    (_) => TextEditingController(text: _sentinel),
-  );
-  final _focus = List.generate(6, (_) => FocusNode());
+  final _focus = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(_sync);
-    for (var index = 0; index < _focus.length; index++) {
-      final current = index;
-      _focus[index].addListener(() {
-        if (_focus[current].hasFocus) widget.controller.select(current);
-        if (mounted) setState(() {});
-      });
-    }
+    widget.controller.addListener(_changed);
+    _focus.addListener(_focusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _activate(0);
     });
   }
 
-  void _sync() {
-    for (var i = 0; i < _fields.length; i++) {
-      final text = '$_sentinel${widget.controller.digitAt(i)}';
-      _fields[i].value = TextEditingValue(
-        text: text,
-        selection: TextSelection(baseOffset: 1, extentOffset: text.length),
-      );
-    }
-    _focus[widget.controller.activeIndex].requestFocus();
+  void _changed() {
+    _focus.requestFocus();
     if (mounted) setState(() {});
   }
 
-  void _edit(int index, String raw) {
-    if (raw.isEmpty || raw == _sentinel) {
-      widget.controller.backspace(index);
-    } else if (RegExp(r'[0-9]').hasMatch(raw)) {
-      widget.controller.enter(index, raw);
-    }
-    _sync();
+  void _focusChanged() {
+    if (mounted) setState(() {});
   }
 
   void _activate(int index) {
     widget.controller.select(index);
-    _focus[index].requestFocus();
-    _sync();
+    _focus.requestFocus();
     SystemChannels.textInput.invokeMethod<void>('TextInput.show');
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_sync);
-    for (final field in _fields) {
-      field.dispose();
-    }
-    for (final node in _focus) {
-      node.dispose();
-    }
+    widget.controller.removeListener(_changed);
+    _focus.removeListener(_focusChanged);
+    _focus.dispose();
     super.dispose();
   }
 
   Widget _digit(int index, double slotWidth, double diameter) {
     final digit = widget.controller.digitAt(index);
     final filled = digit.isNotEmpty;
-    final focused = _focus[index].hasFocus;
+    final focused = _focus.hasFocus && widget.controller.activeIndex == index;
     final palette = widget.palette;
     return Semantics(
       key: ValueKey('otp_digit_${index + 1}'),
@@ -105,7 +74,7 @@ class _OtpInputState extends State<OtpInput> {
       onTap: () => _activate(index),
       onSetText: (text) {
         _activate(index);
-        _edit(index, text);
+        widget.controller.enter(index, text);
       },
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -135,70 +104,17 @@ class _OtpInputState extends State<OtpInput> {
                           : 'digit_empty_outline'],
                 ),
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Text(
-                    digit.isEmpty ? '–' : digit,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color:
-                          palette[filled
-                              ? 'digit_filled_text'
-                              : 'digit_placeholder'],
-                    ),
+              child: Center(
+                child: Text(
+                  digit.isEmpty ? '–' : digit,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color:
+                        palette[filled
+                            ? 'digit_filled_text'
+                            : 'digit_placeholder'],
                   ),
-                  Focus(
-                    onKeyEvent: (_, event) {
-                      if (event is KeyDownEvent &&
-                          event.logicalKey == LogicalKeyboardKey.backspace) {
-                        widget.controller.backspace(index);
-                        return KeyEventResult.handled;
-                      }
-                      return KeyEventResult.ignored;
-                    },
-                    child: TextSelectionTheme(
-                      data: const TextSelectionThemeData(
-                        cursorColor: Colors.transparent,
-                        selectionColor: Colors.transparent,
-                        selectionHandleColor: Colors.transparent,
-                      ),
-                      child: TextField(
-                        key: ValueKey('otp_input_${index + 1}'),
-                        controller: _fields[index],
-                        focusNode: _focus[index],
-                        autofocus: index == 0,
-                        keyboardType: TextInputType.number,
-                        textInputAction: index == 5
-                            ? TextInputAction.done
-                            : TextInputAction.next,
-                        autofillHints: const [AutofillHints.oneTimeCode],
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        smartDashesType: SmartDashesType.disabled,
-                        smartQuotesType: SmartQuotesType.disabled,
-                        showCursor: false,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.transparent,
-                          fontSize: 18,
-                        ),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onTap: () => _activate(index),
-                        onChanged: (raw) => _edit(index, raw),
-                        onSubmitted: (_) {
-                          if (index < 5) _activate(index + 1);
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -214,10 +130,44 @@ class _OtpInputState extends State<OtpInput> {
     final columns = widget.availableWidth >= minSlot * 6 ? 6 : 3;
     final slot = widget.availableWidth / columns;
     final diameter = math.min(slot - 4, math.max(48.0, 24 * scale + 16));
-    return Wrap(
-      alignment: WrapAlignment.center,
-      runSpacing: 8,
-      children: List.generate(6, (i) => _digit(i, slot, diameter)),
+    return Stack(
+      children: [
+        Positioned(
+          left: 0,
+          top: 0,
+          width: 1,
+          height: 1,
+          child: ExcludeSemantics(
+            child: Opacity(
+              opacity: 0,
+              child: TextField(
+                key: const ValueKey('otp_input'),
+                controller: widget.controller,
+                focusNode: _focus,
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.oneTimeCode],
+                inputFormatters: [
+                  TextInputFormatter.withFunction(OtpController.formatEdit),
+                ],
+                enableSuggestions: false,
+                autocorrect: false,
+                showCursor: false,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  isCollapsed: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Wrap(
+          alignment: WrapAlignment.center,
+          runSpacing: 8,
+          children: List.generate(6, (i) => _digit(i, slot, diameter)),
+        ),
+      ],
     );
   }
 }

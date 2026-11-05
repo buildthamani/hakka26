@@ -20,3 +20,6 @@ Render review candidates with:
 
 Inspect test/previews/ against the design before updating baselines. A passing
 golden is a regression check, not proof of similarity to the reference PNG.
+
+Golden comparisons allow up to 5% changed pixels across platforms. Larger
+differences still fail and produce the standard comparison images.

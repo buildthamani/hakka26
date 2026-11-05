@@ -6,10 +6,23 @@ import 'package:hakka/main.dart';
 import 'package:hakka/otp_controller.dart';
 import 'package:hakka/otp_palette.dart';
 
-Finder input(int n) => find.byKey(ValueKey('otp_input_$n'));
+Finder input(int n) => find.byKey(const ValueKey('otp_input'));
 Finder digit(int n) => find.byKey(ValueKey('otp_digit_$n'));
 Finder get submit => find.byKey(const ValueKey('otp_submit'));
 Finder get resend => find.byKey(const ValueKey('otp_resend'));
+
+Future<void> typeAt(WidgetTester tester, int n, String text) async {
+  await tester.tap(digit(n));
+  await tester.pump();
+  final old = tester.widget<TextField>(input(n)).controller!.value;
+  final start = old.selection.start;
+  tester.testTextInput.updateEditingValue(
+    TextEditingValue(
+      text: old.text.replaceRange(start, old.selection.end, text),
+      selection: TextSelection.collapsed(offset: start + text.length),
+    ),
+  );
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -38,12 +51,12 @@ void main() {
   }
 
   bool focused(WidgetTester tester, int n) =>
-      tester.widget<TextField>(input(n)).focusNode!.hasFocus;
+      tester.widget<Semantics>(digit(n)).properties.focused == true;
   String value(WidgetTester tester, int n) =>
       tester.widget<Semantics>(digit(n)).properties.value!;
 
   test(
-    'controller preserves zero, handles holes, replacement and bounded paste',
+    'controller preserves zero, replaces digits and handles bounded paste/deletion',
     () {
       final otp = OtpController();
       addTearDown(otp.dispose);
@@ -58,10 +71,10 @@ void main() {
       otp.enter(2, '9');
       expect(otp.code, '019345');
       otp.backspace(2);
-      expect(otp.digitAt(2), '');
-      otp.backspace(2);
-      expect(otp.digitAt(1), '');
-      expect(otp.activeIndex, 1);
+      expect(otp.code, '01345');
+      otp.backspace(5);
+      expect(otp.code, '0134');
+      expect(otp.activeIndex, 4);
     },
   );
 
@@ -91,20 +104,20 @@ void main() {
     'digit entry advances focus; letters are rejected; zero is retained',
     (tester) async {
       await launch(tester);
-      await tester.enterText(input(1), '0');
+      await typeAt(tester, 1, '0');
       await tester.pump();
       expect(value(tester, 1), '0');
       expect(focused(tester, 2), true);
-      await tester.enterText(input(2), 'abc');
+      await typeAt(tester, 2, 'abc');
       await tester.pump();
       expect(value(tester, 2), '');
       expect(focused(tester, 2), true);
-      await tester.enterText(input(2), '2');
+      await typeAt(tester, 2, '2');
       await tester.pump();
       expect(focused(tester, 3), true);
-      await tester.tap(input(1));
+      await tester.tap(digit(1));
       await tester.pump();
-      await tester.enterText(input(1), '9');
+      await typeAt(tester, 1, '9');
       await tester.pump();
       expect(value(tester, 1), '9');
       expect(value(tester, 2), '2');
@@ -116,10 +129,10 @@ void main() {
     'soft-keyboard deletion from an empty box clears the preceding digit',
     (tester) async {
       await launch(tester);
-      await tester.enterText(input(1), '4');
+      await typeAt(tester, 1, '4');
       await tester.pump();
       expect(focused(tester, 2), true);
-      // A mobile IME deletes the invisible empty-field sentinel, without a key event.
+      // A mobile IME deletes the preceding digit in the real buffer, without a key event.
       tester.testTextInput.updateEditingValue(
         const TextEditingValue(
           text: '',
@@ -129,7 +142,7 @@ void main() {
       await tester.pump();
       expect(value(tester, 1), '');
       expect(focused(tester, 1), true);
-      await tester.enterText(input(1), '');
+      await typeAt(tester, 1, '');
       await tester.pump();
       expect(focused(tester, 1), true);
       await finish(tester);
@@ -140,9 +153,9 @@ void main() {
     'hardware Backspace clears a filled digit, then the preceding digit',
     (tester) async {
       await launch(tester);
-      await tester.enterText(input(1), '12');
+      await typeAt(tester, 1, '12');
       await tester.pump();
-      await tester.tap(input(2));
+      await tester.tap(digit(2));
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
       await tester.pump();
@@ -160,9 +173,9 @@ void main() {
     'mixed-text paste fills all six boxes, including from a later box',
     (tester) async {
       await launch(tester);
-      await tester.tap(input(4));
+      await tester.tap(digit(4));
       await tester.pump();
-      await tester.enterText(input(4), 'Your code is 482913');
+      await typeAt(tester, 4, 'Your code is 482913');
       await tester.pump();
       expect(List.generate(6, (i) => value(tester, i + 1)).join(), '482913');
       expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
@@ -175,7 +188,7 @@ void main() {
   ) async {
     final handle = tester.ensureSemantics();
     await launch(tester);
-    await tester.enterText(input(1), '123456');
+    await typeAt(tester, 1, '123456');
     await tester.pump();
     expect(find.text("You're in."), findsNothing);
     await tester.tap(submit);
@@ -197,7 +210,7 @@ void main() {
     'incorrect code shows exact error, clears every box and restores first focus',
     (tester) async {
       await launch(tester);
-      await tester.enterText(input(1), '482913');
+      await typeAt(tester, 1, '482913');
       await tester.pump();
       await tester.tap(submit);
       await tester.pump();
@@ -207,7 +220,7 @@ void main() {
       }
       expect(focused(tester, 1), true);
       expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-      await tester.enterText(input(1), '1');
+      await typeAt(tester, 1, '1');
       await tester.pump();
       expect(find.text("That code didn't work. Try again."), findsNothing);
       await finish(tester);
@@ -265,6 +278,8 @@ void main() {
         expect(data.flagsCollection.isTextField, true);
         expect(data.hasAction(SemanticsAction.setText), true);
       }
+      await typeAt(tester, 1, '123');
+      await tester.pump();
       final node = tester.getSemantics(digit(3));
       tester.binding.performSemanticsAction(
         SemanticsActionEvent(

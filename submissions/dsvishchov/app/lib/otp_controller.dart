@@ -1,46 +1,98 @@
 import 'dart:math' as math;
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
-/// Digits and the editing position have one source of truth.
-class OtpController extends ChangeNotifier {
+/// The native editing buffer is also the OTP state; there is no mirrored list.
+class OtpController extends TextEditingController {
   static const length = 6;
-  final List<String> _digits = List.filled(length, '');
-  int _activeIndex = 0;
-  int get activeIndex => _activeIndex;
-  String digitAt(int index) => _digits[index];
-  String get code => _digits.join();
-  bool get isComplete => _digits.every((digit) => digit.isNotEmpty);
+  OtpController()
+    : super.fromValue(
+        const TextEditingValue(selection: TextSelection.collapsed(offset: 0)),
+      );
+
+  String get code => text;
+  bool get isComplete => text.length == length;
+  int get activeIndex => math.min(math.max(0, selection.start), length - 1);
+  String digitAt(int index) => index < text.length ? text[index] : '';
 
   void select(int index) {
-    assert(index >= 0 && index < length);
-    if (_activeIndex == index) return;
-    _activeIndex = index;
-    notifyListeners();
+    final start = index.clamp(0, math.min(text.length, length - 1)).toInt();
+    selection = TextSelection(
+      baseOffset: start,
+      extentOffset: math.min(start + 1, text.length),
+    );
   }
 
-  void enter(int index, String text) {
-    final digits = text.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digits.isEmpty) return;
-    // A full pasted code replaces the OTP even when a later box is focused.
-    final start = digits.length >= length ? 0 : index;
-    final count = math.min(digits.length, length - start);
-    for (var offset = 0; offset < count; offset++) {
-      _digits[start + offset] = digits[offset];
-    }
-    _activeIndex = math.min(start + count, length - 1);
-    notifyListeners();
+  void enter(int index, String raw) {
+    select(index);
+    final start = selection.start;
+    value = formatEdit(
+      value,
+      TextEditingValue(
+        text: text.replaceRange(start, selection.end, raw),
+        selection: TextSelection.collapsed(offset: start + raw.length),
+      ),
+    );
   }
 
+  /// Remove the selected digit, or the preceding digit at the end of the code.
   void backspace(int index) {
-    if (_digits[index].isEmpty && index > 0) index--;
-    _digits[index] = '';
-    _activeIndex = index;
-    notifyListeners();
+    select(index);
+    final start = selection.isCollapsed
+        ? math.max(0, selection.start - 1)
+        : selection.start;
+    value = TextEditingValue(
+      text: text.replaceRange(start, selection.end, ''),
+      selection: TextSelection.collapsed(offset: start),
+    );
   }
 
-  void clear() {
-    _digits.fillRange(0, length, '');
-    _activeIndex = 0;
-    notifyListeners();
+  static String _digits(String text) => text.replaceAll(RegExp(r'[^0-9]'), '');
+
+  static TextEditingValue formatEdit(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final start = oldValue.selection.start.clamp(0, oldValue.text.length);
+    final end = oldValue.selection.end.clamp(start, oldValue.text.length);
+    final prefix = oldValue.text.substring(0, start);
+    final suffix = oldValue.text.substring(end);
+    final isReplacement =
+        newValue.text.startsWith(prefix) &&
+        newValue.text.endsWith(suffix) &&
+        newValue.text.length >= prefix.length + suffix.length;
+    final inserted = isReplacement
+        ? newValue.text.substring(
+            prefix.length,
+            newValue.text.length - suffix.length,
+          )
+        : newValue.text;
+    final insertedDigits = _digits(inserted);
+    if (inserted.isNotEmpty && insertedDigits.isEmpty) return oldValue;
+    // A complete pasted/autofilled code replaces the entire OTP at any position.
+    if (insertedDigits.length >= length) {
+      return TextEditingValue(
+        text: insertedDigits.substring(0, length),
+        selection: const TextSelection(
+          baseOffset: length - 1,
+          extentOffset: length,
+        ),
+      );
+    }
+    final digits = _digits(newValue.text);
+    final clean = digits.substring(0, math.min(length, digits.length));
+    final rawCaret = newValue.selection.start.clamp(0, newValue.text.length);
+    final caret = math.min(
+      clean.length,
+      _digits(newValue.text.substring(0, rawCaret)).length,
+    );
+    return TextEditingValue(
+      text: clean,
+      selection: TextSelection(
+        baseOffset: caret,
+        extentOffset: insertedDigits.isNotEmpty
+            ? math.min(caret + 1, clean.length)
+            : caret,
+      ),
+    );
   }
 }
