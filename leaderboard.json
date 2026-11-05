@@ -398,6 +398,24 @@
     "stack": "react-native"
   },
   {
+    "team": "hakka-otp",
+    "score": 25,
+    "breakdown": {
+      "ac": 10,
+      "visual": 6,
+      "code": 4,
+      "build": 2,
+      "tests": 2,
+      "prompt": 1
+    },
+    "graded_at": "2026-11-05T21:22:05Z",
+    "flags": [],
+    "status": "scored",
+    "pr": 37,
+    "updated_at": "2026-11-05T21:22:05Z",
+    "stack": "flutter"
+  },
+  {
     "team": "josendungu",
     "score": 24,
     "breakdown": {
@@ -654,17 +672,6 @@
     "pr": 8,
     "updated_at": "2026-11-05T17:56:04Z",
     "stack": "unknown"
-  },
-  {
-    "team": "hakka-otp",
-    "score": null,
-    "breakdown": null,
-    "graded_at": null,
-    "flags": [],
-    "status": "grading",
-    "pr": 37,
-    "updated_at": "2026-11-05T21:21:46Z",
-    "stack": "flutter"
   },
   {
     "team": "kkmurerwa",
