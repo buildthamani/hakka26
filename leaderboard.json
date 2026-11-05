@@ -450,6 +450,24 @@
     "stack": "android"
   },
   {
+    "team": "aymanissa-dev-swift",
+    "score": 24,
+    "breakdown": {
+      "ac": 10,
+      "visual": 6,
+      "code": 3,
+      "build": 2,
+      "tests": 2,
+      "prompt": 1
+    },
+    "graded_at": "2026-11-05T14:04:52Z",
+    "flags": [],
+    "status": "scored",
+    "pr": 32,
+    "updated_at": "2026-11-05T14:04:52Z",
+    "stack": "ios"
+  },
+  {
     "team": "wallace-ai",
     "score": 20,
     "breakdown": {
@@ -542,17 +560,6 @@
     "pr": 26,
     "updated_at": "2026-11-05T09:51:00Z",
     "stack": "unknown"
-  },
-  {
-    "team": "aymanissa-dev-swift",
-    "score": null,
-    "breakdown": null,
-    "graded_at": null,
-    "flags": [],
-    "status": "grading",
-    "pr": 32,
-    "updated_at": "2026-11-05T14:04:31Z",
-    "stack": "ios"
   },
   {
     "team": "kkmurerwa",
