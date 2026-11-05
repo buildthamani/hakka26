@@ -360,6 +360,26 @@
     "stack": "react-native"
   },
   {
+    "team": "aymanissa-dev-swift",
+    "score": 25,
+    "breakdown": {
+      "ac": 10,
+      "visual": 6,
+      "code": 4,
+      "build": 2,
+      "tests": 2,
+      "prompt": 1
+    },
+    "graded_at": "2026-11-05T14:43:19Z",
+    "flags": [
+      "screenshot_mismatch"
+    ],
+    "status": "scored",
+    "pr": 32,
+    "updated_at": "2026-11-05T14:43:19Z",
+    "stack": "ios"
+  },
+  {
     "team": "josendungu",
     "score": 24,
     "breakdown": {
@@ -448,24 +468,6 @@
     "pr": 9,
     "updated_at": "2026-11-05T09:44:35Z",
     "stack": "android"
-  },
-  {
-    "team": "aymanissa-dev-swift",
-    "score": 24,
-    "breakdown": {
-      "ac": 10,
-      "visual": 6,
-      "code": 3,
-      "build": 2,
-      "tests": 2,
-      "prompt": 1
-    },
-    "graded_at": "2026-11-05T14:30:12Z",
-    "flags": [],
-    "status": "grading",
-    "pr": 32,
-    "updated_at": "2026-11-05T14:42:53Z",
-    "stack": "ios"
   },
   {
     "team": "wallace-ai",
