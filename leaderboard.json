@@ -524,6 +524,24 @@
     "stack": "android"
   },
   {
+    "team": "wolfof420street",
+    "score": 24,
+    "breakdown": {
+      "ac": 10,
+      "visual": 6,
+      "code": 3,
+      "build": 2,
+      "tests": 2,
+      "prompt": 1
+    },
+    "graded_at": "2026-11-05T20:49:21Z",
+    "flags": [],
+    "status": "scored",
+    "pr": 36,
+    "updated_at": "2026-11-05T20:49:21Z",
+    "stack": "android"
+  },
+  {
     "team": "wallace-ai",
     "score": 20,
     "breakdown": {
@@ -626,16 +644,5 @@
     "status": "building",
     "pr": 4,
     "updated_at": "2026-11-05T07:49:20Z"
-  },
-  {
-    "team": "wolfof420street",
-    "score": null,
-    "breakdown": null,
-    "graded_at": null,
-    "flags": [],
-    "status": "grading",
-    "pr": 36,
-    "updated_at": "2026-11-05T20:48:59Z",
-    "stack": "android"
   }
 ]
