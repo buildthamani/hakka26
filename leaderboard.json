@@ -470,6 +470,26 @@
     "stack": "android"
   },
   {
+    "team": "netstate",
+    "score": 20,
+    "breakdown": {
+      "ac": 10,
+      "visual": 3,
+      "code": 3,
+      "build": 2,
+      "tests": 2,
+      "prompt": 0
+    },
+    "graded_at": "2026-11-05T13:34:23Z",
+    "flags": [
+      "prompt_code_mismatch"
+    ],
+    "status": "scored",
+    "pr": 31,
+    "updated_at": "2026-11-05T13:34:23Z",
+    "stack": "android"
+  },
+  {
     "team": "mambo",
     "score": 15,
     "breakdown": {
@@ -522,24 +542,6 @@
     "pr": 26,
     "updated_at": "2026-11-05T09:51:00Z",
     "stack": "unknown"
-  },
-  {
-    "team": "netstate",
-    "score": 0,
-    "breakdown": {
-      "ac": 0,
-      "visual": 0,
-      "code": 0,
-      "build": 0,
-      "tests": 0,
-      "prompt": 0
-    },
-    "graded_at": "2026-11-05T13:25:00Z",
-    "flags": [],
-    "status": "grading",
-    "pr": 31,
-    "updated_at": "2026-11-05T13:34:00Z",
-    "stack": "android"
   },
   {
     "team": "kkmurerwa",
