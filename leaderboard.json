@@ -460,11 +460,11 @@
       "tests": 2,
       "prompt": 1
     },
-    "graded_at": "2026-11-05T14:04:52Z",
+    "graded_at": "2026-11-05T14:30:12Z",
     "flags": [],
-    "status": "grading",
+    "status": "scored",
     "pr": 32,
-    "updated_at": "2026-11-05T14:29:48Z",
+    "updated_at": "2026-11-05T14:30:12Z",
     "stack": "ios"
   },
   {
