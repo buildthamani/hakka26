@@ -663,8 +663,9 @@
     "breakdown": null,
     "graded_at": null,
     "flags": [],
-    "status": "building",
+    "status": "grading",
     "pr": 38,
-    "updated_at": "2026-11-05T21:17:30Z"
+    "updated_at": "2026-11-05T21:21:04Z",
+    "stack": "android"
   }
 ]
