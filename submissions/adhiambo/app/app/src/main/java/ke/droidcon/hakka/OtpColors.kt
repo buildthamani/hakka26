@@ -1,6 +1,7 @@
 package ke.droidcon.hakka
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.staticCompositionLocalOf
 
 /** Exact OTP palette from assets/colours.json. */
 data class OtpColors(
@@ -27,3 +28,6 @@ data class OtpColors(
         )
     }
 }
+
+/** Provided explicitly by HakkaTheme, independently of Material color overrides. */
+internal val LocalOtpColors = staticCompositionLocalOf { OtpColors.Light }

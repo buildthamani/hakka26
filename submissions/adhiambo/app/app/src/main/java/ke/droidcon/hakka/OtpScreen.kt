@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -25,8 +24,7 @@ import kotlinx.coroutines.delay
 fun OtpScreen(nowMillis: () -> Long = { SystemClock.elapsedRealtime() }) {
     var state by rememberSaveable { mutableStateOf(OtpState.initial(nowMillis())) }
     var seconds by remember { mutableIntStateOf(state.secondsRemaining(nowMillis())) }
-    val colors = if (MaterialTheme.colorScheme.background == Color(0xFF161A17))
-        OtpColors.Dark else OtpColors.Light
+    val colors = LocalOtpColors.current
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(state.deadlineMillis) {
         do {

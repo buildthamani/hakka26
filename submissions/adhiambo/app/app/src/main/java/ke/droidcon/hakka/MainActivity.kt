@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,10 +21,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HakkaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) darkColorScheme(
-            background = OtpColors.Dark.sheet, primary = OtpColors.Dark.button,
-        ) else lightColorScheme(background = OtpColors.Light.sheet, primary = OtpColors.Light.button),
-        content = content,
-    )
+    val colors = if (darkTheme) OtpColors.Dark else OtpColors.Light
+    CompositionLocalProvider(LocalOtpColors provides colors) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) darkColorScheme(
+                background = colors.sheet, primary = colors.button,
+            ) else lightColorScheme(background = colors.sheet, primary = colors.button),
+            content = content,
+        )
+    }
 }

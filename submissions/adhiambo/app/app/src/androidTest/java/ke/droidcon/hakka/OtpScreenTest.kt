@@ -1,5 +1,9 @@
 package ke.droidcon.hakka
 
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.ClipboardManager
@@ -19,16 +23,18 @@ class OtpScreenTest {
     @get:Rule val rule = createComposeRule()
     private var now = 0L
     private lateinit var clipboard: ClipboardManager
+    private lateinit var inputView: View
     private fun launch(dark: Boolean = false) {
         rule.setContent {
             clipboard = LocalClipboardManager.current
+            inputView = LocalView.current
             HakkaTheme(darkTheme = dark) { OtpScreen(nowMillis = { now }) }
         }
     }
     private fun digit(index: Int) = rule.onNodeWithTag("otp_digit_${index + 1}")
     private fun assertDigit(index: Int, value: String) {
         digit(index).assert(SemanticsMatcher.expectValue(SemanticsProperties.InputText,
-            AnnotatedString(value.ifEmpty { EMPTY_SLOT })))
+            AnnotatedString(value)))
     }
     private fun paste(text: String, index: Int = 0) {
         digit(index).performClick()
@@ -89,10 +95,71 @@ class OtpScreenTest {
     @Test fun softwareBackspaceOnEmptyClearsPreviousAndMovesBack() {
         launch()
         paste("12")
-        digit(2).performTextClearance()
+        rule.runOnIdle {
+            checkNotNull(inputView.onCreateInputConnection(EditorInfo()))
+                .deleteSurroundingText(1, 0)
+        }
         assertDigit(1, "")
         assertDigit(0, "1")
         digit(1).assertIsFocused()
+    }
+    @Test fun codePointBackspaceOnEmptyClearsPreviousAndMovesBack() {
+        launch()
+        paste("12")
+        rule.runOnIdle {
+            checkNotNull(inputView.onCreateInputConnection(EditorInfo()))
+                .deleteSurroundingTextInCodePoints(1, 0)
+        }
+        assertDigit(1, "")
+        assertDigit(0, "1")
+        digit(1).assertIsFocused()
+    }
+    @Test fun softwareBackspaceOnFilledFieldUsesNormalEditing() {
+        launch()
+        paste("123456")
+        rule.runOnIdle {
+            checkNotNull(inputView.onCreateInputConnection(EditorInfo()))
+                .deleteSurroundingText(1, 0)
+        }
+        assertDigit(5, "")
+        assertDigit(4, "5")
+        digit(5).assertIsFocused()
+    }
+    @Test fun noOpAndForwardImeDeletionDoNotErasePreviousDigit() {
+        launch()
+        paste("12")
+        rule.runOnIdle {
+            val connection = checkNotNull(inputView.onCreateInputConnection(EditorInfo()))
+            connection.deleteSurroundingText(0, 0)
+            connection.deleteSurroundingText(0, 1)
+            connection.deleteSurroundingTextInCodePoints(0, 1)
+        }
+        assertDigit(0, "1")
+        assertDigit(1, "2")
+        assertDigit(2, "")
+        digit(2).assertIsFocused()
+    }
+    @Test fun emptyFirstFieldHandlesImeBackspaceWithoutMovingOutOfBounds() {
+        launch()
+        rule.runOnIdle {
+            checkNotNull(inputView.onCreateInputConnection(EditorInfo()))
+                .deleteSurroundingText(1, 0)
+        }
+        repeat(6) { assertDigit(it, "") }
+        digit(0).assertIsFocused()
+    }
+    @Test fun paletteDoesNotDependOnMaterialBackgroundColor() {
+        rule.setContent {
+            clipboard = LocalClipboardManager.current
+            HakkaTheme(darkTheme = false) {
+                MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy(
+                    background = OtpColors.Dark.sheet,
+                )) { OtpScreen(nowMillis = { now }) }
+            }
+        }
+        paste("12")
+        val pixels = digit(0).captureToImage().toPixelMap()
+        assertEquals(OtpColors.Light.filled, pixels[pixels.width / 2, pixels.height / 4])
     }
     @Test fun deleteFilledBoxClearsItAndFirstBoxNeverGoesOutOfBounds() {
         launch()
@@ -135,6 +202,7 @@ class OtpScreenTest {
         val restoration = StateRestorationTester(rule)
         restoration.setContent {
             clipboard = LocalClipboardManager.current
+            inputView = LocalView.current
             HakkaTheme { OtpScreen(nowMillis = { now }) }
         }
         paste("12")

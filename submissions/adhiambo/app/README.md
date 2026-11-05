@@ -2,7 +2,7 @@
 
 Android Jetpack Compose bottom sheet matching the challenge's copy, circular digit states, and `assets/colours.json` palette. The logo is the supplied `assets/thamani-logo.png` (the challenge requires that asset even though the reference illustration uses a different logo).
 
-`OtpState` holds pure input, deletion, validation, and countdown transitions. `OtpInput` implements the six accessible circular fields. `OtpScreen` presents the sheet, retry control, live status, and submit button. State survives activity recreation; the countdown uses elapsed time so backgrounding does not pause it.
+`OtpState` holds pure input, deletion, validation, and countdown transitions. `OtpInput` implements the six accessible circular fields. Empty fields contain actual empty strings; `EmptyFieldBackspace` uses Compose platform input interception to handle backward-deletion requests from software keyboards. `HakkaTheme` explicitly provides `LocalOtpColors`, independently of Material background colors. `OtpScreen` presents the sheet, retry control, live status, and submit button. State survives activity recreation; the countdown uses elapsed time so backgrounding does not pause it.
 
 - Mixed-text paste extracts ASCII digits and drops overflow beyond six positions.
 - Backspace clears a filled current box; on an empty box it moves back and clears the previous digit.
@@ -25,4 +25,4 @@ CI runs the JVM tests, including all pure OTP transitions. With an emulator/devi
 ./gradlew connectedDebugAndroidTest
 ```
 
-The UI suite covers real clipboard paste, focus, visible digits, both deletion paths, success/error behavior, countdown/retry, state restoration, palette states, and dark-mode accessibility.
+The UI suite covers real clipboard paste, focus, visible digits, hardware deletion and real IME deletion requests (including code-point deletion), success/error behavior, countdown/retry, state restoration, palette states, and dark-mode accessibility.
