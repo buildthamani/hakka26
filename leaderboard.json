@@ -661,9 +661,10 @@
     "breakdown": null,
     "graded_at": null,
     "flags": [],
-    "status": "building",
+    "status": "grading",
     "pr": 37,
-    "updated_at": "2026-11-05T21:16:15Z"
+    "updated_at": "2026-11-05T21:21:46Z",
+    "stack": "flutter"
   },
   {
     "team": "kkmurerwa",
