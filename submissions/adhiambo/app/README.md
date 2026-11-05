@@ -1,21 +1,28 @@
-# OTP demo
+# Hackathon OTP screen
 
-Android Jetpack Compose screen with six immediately masked numeric boxes, light/dark themes, clipboard paste, focus advancement, and backward deletion. Mixed-content paste is rejected in full; input beyond the sixth position is discarded. Delete clears the current box and focuses the previous box without erasing its value.
+Android Jetpack Compose bottom sheet matching the challenge's copy, circular digit states, and `assets/colours.json` palette. The logo is the supplied `assets/thamani-logo.png` (the challenge requires that asset even though the reference illustration uses a different logo).
 
-Submit requires six digits and displays a local demo confirmation. The first submission starts a 60-second resend cooldown. Later submissions do not reset it. Resend becomes available at expiry, clears the code, and starts another 60-second cooldown. State survives activity recreation, and the timer uses elapsed time so backgrounding does not extend it. No network requests are made.
+`OtpState` holds pure input, deletion, validation, and countdown transitions. `OtpInput` implements the six accessible circular fields. `OtpScreen` presents the sheet, retry control, live status, and submit button. State survives activity recreation; the countdown uses elapsed time so backgrounding does not pause it.
+
+- Mixed-text paste extracts ASCII digits and drops overflow beyond six positions.
+- Backspace clears a filled current box; on an empty box it moves back and clears the previous digit.
+- `123456` shows `You're in.`. Other complete codes show `That code didn't work. Try again.`, clear the fields, and refocus the first.
+- The 30-second resend cooldown starts on entry and restarts after each resend.
+- Test IDs are `otp_digit_1` through `otp_digit_6`, `otp_submit`, `otp_resend`, and `otp_status`.
 
 ## Verification
 
-With JDK 17+ and an Android SDK configured, run:
+Run from this directory with JDK 21 and an Android SDK configured:
 
 ```sh
-./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
+./gradlew assembleDebug testDebugUnitTest --no-daemon
+./gradlew lintDebug
 ```
 
-Start an Android emulator or connect a device, then run the Compose UI suite:
+CI runs the JVM tests, including all pure OTP transitions. With an emulator/device connected, run the Compose UI tests too:
 
 ```sh
-./gradlew :app:connectedDebugAndroidTest
+./gradlew connectedDebugAndroidTest
 ```
 
-UI coverage includes masking, focus, typing, real clipboard paste, invalid input, overflow, hardware/software deletion, field replacement, submission gating, timer expiry/restart, saved-state restoration, and dark theme.
+The UI suite covers real clipboard paste, focus, visible digits, both deletion paths, success/error behavior, countdown/retry, state restoration, palette states, and dark-mode accessibility.

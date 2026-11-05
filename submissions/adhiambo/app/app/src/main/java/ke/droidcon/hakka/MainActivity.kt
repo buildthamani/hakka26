@@ -21,7 +21,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HakkaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme(),
+        colorScheme = if (darkTheme) darkColorScheme(
+            background = OtpColors.Dark.sheet, primary = OtpColors.Dark.button,
+        ) else lightColorScheme(background = OtpColors.Light.sheet, primary = OtpColors.Light.button),
         content = content,
     )
 }
