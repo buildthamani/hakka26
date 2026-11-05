@@ -462,9 +462,9 @@
     },
     "graded_at": "2026-11-05T14:30:12Z",
     "flags": [],
-    "status": "building",
+    "status": "grading",
     "pr": 32,
-    "updated_at": "2026-11-05T14:37:35Z",
+    "updated_at": "2026-11-05T14:42:53Z",
     "stack": "ios"
   },
   {
