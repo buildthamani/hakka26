@@ -538,9 +538,9 @@
     },
     "graded_at": "2026-11-05T07:52:08Z",
     "flags": [],
-    "status": "invalid",
+    "status": "building",
     "pr": 8,
-    "updated_at": "2026-11-05T07:52:08Z",
+    "updated_at": "2026-11-05T17:55:33Z",
     "stack": "unknown"
   },
   {
