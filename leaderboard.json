@@ -587,9 +587,10 @@
     "breakdown": null,
     "graded_at": null,
     "flags": [],
-    "status": "building",
+    "status": "grading",
     "pr": 34,
-    "updated_at": "2026-11-05T19:19:31Z"
+    "updated_at": "2026-11-05T19:28:29Z",
+    "stack": "react-native"
   },
   {
     "team": "kkmurerwa",
