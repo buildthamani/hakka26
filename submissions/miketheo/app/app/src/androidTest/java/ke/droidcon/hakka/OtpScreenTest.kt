@@ -11,6 +11,10 @@ class OtpScreenTest {
     @get:Rule val compose = createComposeRule()
     private fun launch(dark: Boolean = false) {
         compose.setContent { MaterialTheme { OtpScreen(dark = dark) } }
+        compose.waitUntil(timeoutMillis = 5_000) {
+            compose.onAllNodes(hasTestTag("otp_digit_1") and isFocused())
+                .fetchSemanticsNodes().isNotEmpty()
+        }
     }
     @Test fun initialFocusLabelsAndDisabledActions() {
         launch()
@@ -26,6 +30,13 @@ class OtpScreenTest {
         compose.onNodeWithTag("otp_digit_2").assertIsFocused()
             .performKeyInput { pressKey(Key.Backspace) }
         compose.onNodeWithTag("otp_digit_1").assertIsFocused()
+        compose.onNodeWithTag("otp_submit").assertIsNotEnabled()
+    }
+    @Test fun halfwayInputAdvancesToEmptyFourthCircle() {
+        launch()
+        compose.onNodeWithTag("otp_digit_1").performTextInput("123")
+        compose.onNodeWithTag("otp_digit_4").assertIsFocused()
+        compose.onNodeWithTag("otp_digit_3").assertIsNotFocused()
         compose.onNodeWithTag("otp_submit").assertIsNotEnabled()
     }
     @Test fun pastedWrongCodeClearsAndShowsExactError() {
