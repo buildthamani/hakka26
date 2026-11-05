@@ -562,6 +562,16 @@
     "stack": "unknown"
   },
   {
+    "team": "adams",
+    "score": null,
+    "breakdown": null,
+    "graded_at": null,
+    "flags": [],
+    "status": "building",
+    "pr": 34,
+    "updated_at": "2026-11-05T19:19:31Z"
+  },
+  {
     "team": "jnicolao",
     "score": null,
     "breakdown": null,
