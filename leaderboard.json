@@ -370,13 +370,11 @@
       "tests": 2,
       "prompt": 1
     },
-    "graded_at": "2026-11-05T14:43:19Z",
-    "flags": [
-      "screenshot_mismatch"
-    ],
-    "status": "grading",
+    "graded_at": "2026-11-05T14:53:18Z",
+    "flags": [],
+    "status": "scored",
     "pr": 32,
-    "updated_at": "2026-11-05T14:52:57Z",
+    "updated_at": "2026-11-05T14:53:18Z",
     "stack": "ios"
   },
   {
