@@ -536,9 +536,9 @@
     },
     "graded_at": "2026-11-05T13:25:00Z",
     "flags": [],
-    "status": "invalid",
+    "status": "building",
     "pr": 31,
-    "updated_at": "2026-11-05T13:25:00Z",
+    "updated_at": "2026-11-05T13:30:42Z",
     "stack": "unknown"
   },
   {
