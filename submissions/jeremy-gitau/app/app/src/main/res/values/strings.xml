@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">hakka</string>
+    <string name="otp_title">Enter your code</string>
+    <string name="otp_subtitle">A 6-digit code has been sent to your phone.</string>
+    <string name="otp_resend_prompt">Didn\'t receive the code?\u0020</string>
+    <string name="otp_resend">Resend</string>
+    <string name="otp_resend_countdown">Resend in %1$s</string>
+    <string name="otp_submit">Submit</string>
+    <string name="otp_success">You\'re in.</string>
+    <string name="otp_error">That code didn\'t work. Try again.</string>
+    <string name="otp_digit_label">Digit %1$d of %2$d</string>
+    <string name="otp_logo">Thamani logo</string>
+    <string name="otp_background_title">Welcome back</string>
+</resources>
