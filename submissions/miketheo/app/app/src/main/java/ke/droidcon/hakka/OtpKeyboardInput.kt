@@ -1,18 +1,21 @@
 package ke.droidcon.hakka
 
 import android.view.inputmethod.InputConnectionWrapper
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.platform.PlatformTextInputInterceptor
 import androidx.compose.ui.platform.PlatformTextInputMethodRequest
 
 /**
- * An empty editor has no text to delete, so Compose's value callback cannot report
- * an IME backspace. Handle that Android command directly; all other editing stays
- * with the standard Compose input connection. No sentinel text enters the editor.
+ * Routes physical and software keyboard backspace to the same callback.
+ * Only empty-editor IME deletion needs an adapter: it cannot change the field's
+ * value. Ordinary text edits stay with Compose's standard input connection.
  */
 @Composable
-internal fun EmptyBackspaceInput(
+internal fun OtpKeyboardInput(
     empty: Boolean,
     onBackspace: () -> Unit,
     content: @Composable () -> Unit,
@@ -39,5 +42,16 @@ internal fun EmptyBackspaceInput(
             })
         }
     }
-    InterceptPlatformTextInput(interceptor, content)
+    InterceptPlatformTextInput(interceptor) {
+        Box(
+            Modifier.onPreviewKeyEvent { event ->
+                if (event.key != Key.Backspace) {
+                    false
+                } else {
+                    if (event.type == KeyEventType.KeyDown) backspace()
+                    true
+                }
+            },
+        ) { content() }
+    }
 }

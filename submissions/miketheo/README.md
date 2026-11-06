@@ -11,8 +11,8 @@ heading/resend composables; `OtpState.kt` is the single saved source of digit an
 requested-focus state. `OtpInput.kt` observes each field's focus interaction for
 styling without copying focus into another mutable state.
 
-`EmptyBackspaceInput.kt` forwards Android input connections and handles an empty
-editor's deletion command directly. There is no invisible anchor or transformed
+`OtpKeyboardInput.kt` routes physical and software backspace to one callback,
+forwarding all ordinary text edits to Compose. There is no invisible anchor or transformed
 sentinel text. Device tests cover both hardware and software keyboard deletion.
 
 Submission media: `screenshot.png` shows three filled circles, the white focused

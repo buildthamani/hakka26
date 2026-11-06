@@ -1,14 +1,88 @@
 package ke.droidcon.hakka
-import org.junit.Assert.*
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
+
 class OtpStateTest {
- @Test fun initialDisabled() { val s = OtpState(); assertFalse(s.complete); assertEquals(s, s.submit()) }
- @Test fun advances() { val s = OtpState().input(0,"4"); assertEquals("4",s.digits[0]); assertEquals(1,s.focus) }
- @Test fun paste() { val s=OtpState().input(3,"Your code is 482913"); assertEquals("482913",s.digits.joinToString("")); assertTrue(s.complete); assertEquals(5,s.focus) }
- @Test fun digitsOnly() { assertEquals(OtpState(),OtpState().input(0,"abc!")); assertEquals("123456",OtpState().input(0,"12345678").digits.joinToString("")) }
- @Test fun emptyBackspace() { val s=OtpState().input(0,"4").backspace(1); assertEquals("",s.digits[0]); assertEquals(0,s.focus); assertEquals(0,OtpState().backspace(0).focus) }
- @Test fun filledBackspace() { val s=OtpState().input(0,"12").backspace(1); assertEquals("1",s.digits[0]); assertEquals("",s.digits[1]); assertEquals(1,s.focus) }
- @Test fun success() { assertEquals("You're in.",OtpState().input(0,"123456").submit().status) }
- @Test fun failureResets() { val s=OtpState().input(0,"482913").submit(); assertEquals("That code didn't work. Try again.",s.status); assertEquals(List(6){""},s.digits); assertEquals(0,s.focus); assertFalse(s.complete); assertEquals("",s.input(0,"1").status) }
- @Test fun countdown() { assertEquals(30,remainingSeconds(30000,0)); assertEquals(1,remainingSeconds(30000,29999)); assertEquals(0,remainingSeconds(30000,30000)); assertEquals(0,remainingSeconds(30000,40000)); assertEquals(30,remainingSeconds(70000,40000)) }
+    @Test
+    fun incompleteCodeCannotBeSubmitted() {
+        val state = OtpState()
+
+        assertFalse(state.complete)
+        assertEquals(state, state.submit())
+    }
+
+    @Test
+    fun enteringDigitAdvancesFocus() {
+        val state = OtpState().input(index = 0, raw = "4")
+
+        assertEquals("4", state.digits[0])
+        assertEquals(1, state.focus)
+    }
+
+    @Test
+    fun pastedMessageFillsCodeFromFirstBox() {
+        val state = OtpState().input(index = 3, raw = "Your code is 482913")
+
+        assertEquals("482913", state.digits.joinToString(""))
+        assertTrue(state.complete)
+        assertEquals(5, state.focus)
+    }
+
+    @Test
+    fun inputIgnoresNonDigitsAndTruncatesLongCodes() {
+        val initial = OtpState()
+        val longCode = initial.input(index = 0, raw = "12345678")
+
+        assertEquals(initial, initial.input(index = 0, raw = "abc!"))
+        assertEquals("123456", longCode.digits.joinToString(""))
+    }
+
+    @Test
+    fun backspaceOnEmptyBoxClearsPreviousDigit() {
+        val state = OtpState().input(index = 0, raw = "4").backspace(index = 1)
+
+        assertEquals("", state.digits[0])
+        assertEquals(0, state.focus)
+        assertEquals(0, OtpState().backspace(index = 0).focus)
+    }
+
+    @Test
+    fun backspaceOnFilledBoxClearsItWithoutMovingFocus() {
+        val state = OtpState().input(index = 0, raw = "12").backspace(index = 1)
+
+        assertEquals("1", state.digits[0])
+        assertEquals("", state.digits[1])
+        assertEquals(1, state.focus)
+    }
+
+    @Test
+    fun correctCodeShowsSuccess() {
+        val state = OtpState().input(index = 0, raw = "123456").submit()
+
+        assertEquals("You're in.", state.status)
+    }
+
+    @Test
+    fun wrongCodeClearsDigitsAndErrorDisappearsOnRetry() {
+        val failed = OtpState().input(index = 0, raw = "482913").submit()
+        val retry = failed.input(index = 0, raw = "1")
+
+        assertEquals("That code didn't work. Try again.", failed.status)
+        assertEquals(List(6) { "" }, failed.digits)
+        assertEquals(0, failed.focus)
+        assertFalse(failed.complete)
+        assertEquals("", retry.status)
+    }
+
+    @Test
+    fun countdownRoundsUpAndStopsAtZero() {
+        assertEquals(30, remainingSeconds(deadline = 30_000, now = 0))
+        assertEquals(1, remainingSeconds(deadline = 30_000, now = 29_999))
+        assertEquals(0, remainingSeconds(deadline = 30_000, now = 30_000))
+        assertEquals(0, remainingSeconds(deadline = 30_000, now = 40_000))
+        assertEquals(30, remainingSeconds(deadline = 70_000, now = 40_000))
+    }
 }

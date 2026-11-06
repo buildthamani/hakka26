@@ -16,7 +16,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
@@ -76,7 +75,7 @@ private fun OtpDigit(
         selected -> palette.sheet
         else -> palette.empty
     }
-    EmptyBackspaceInput(empty = !filled, onBackspace = onBackspace) {
+    OtpKeyboardInput(empty = !filled, onBackspace = onBackspace) {
         BasicTextField(
             value = TextFieldValue(digit, TextRange(digit.length)),
             onValueChange = { value ->
@@ -102,12 +101,6 @@ private fun OtpDigit(
                 fontSize = 20.sp, textAlign = TextAlign.Center,
             ),
             modifier = Modifier.size(diameter).focusRequester(requester)
-                .onPreviewKeyEvent {
-                    if (it.type == KeyEventType.KeyDown && it.key == Key.Backspace) {
-                        onBackspace()
-                        true
-                    } else false
-                }
                 .testTag("otp_digit_${index + 1}")
                 .semantics { contentDescription = "Digit ${index + 1} of 6" }
                 .background(background, CircleShape)
