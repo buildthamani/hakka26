@@ -650,9 +650,9 @@
     "flags": [
       "other"
     ],
-    "status": "build_failed",
-    "pr": 36,
-    "updated_at": "2026-11-05T21:03:27Z",
+    "status": "building",
+    "pr": 40,
+    "updated_at": "2026-11-06T09:19:25Z",
     "stack": "android"
   },
   {
