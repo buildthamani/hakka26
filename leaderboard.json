@@ -561,20 +561,20 @@
   },
   {
     "team": "miketheo",
-    "score": 23,
+    "score": 24,
     "breakdown": {
       "ac": 10,
-      "visual": 5,
+      "visual": 6,
       "code": 3,
       "build": 2,
       "tests": 2,
       "prompt": 1
     },
-    "graded_at": "2026-11-05T21:48:44Z",
+    "graded_at": "2026-11-06T07:12:20Z",
     "flags": [],
-    "status": "grading",
+    "status": "scored",
     "pr": 38,
-    "updated_at": "2026-11-06T07:11:59Z",
+    "updated_at": "2026-11-06T07:12:20Z",
     "stack": "android"
   },
   {
