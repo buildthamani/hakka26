@@ -636,26 +636,6 @@
     "stack": "android"
   },
   {
-    "team": "wolfof420street",
-    "score": 15,
-    "breakdown": {
-      "ac": 5,
-      "visual": 6,
-      "code": 3,
-      "build": 0,
-      "tests": 0,
-      "prompt": 1
-    },
-    "graded_at": "2026-11-05T21:03:27Z",
-    "flags": [
-      "other"
-    ],
-    "status": "building",
-    "pr": 40,
-    "updated_at": "2026-11-06T09:19:25Z",
-    "stack": "android"
-  },
-  {
     "team": "pr-26",
     "score": 0,
     "breakdown": {
@@ -689,6 +669,24 @@
     "status": "invalid",
     "pr": 8,
     "updated_at": "2026-11-05T17:56:04Z",
+    "stack": "unknown"
+  },
+  {
+    "team": "wolfof420street",
+    "score": 0,
+    "breakdown": {
+      "ac": 0,
+      "visual": 0,
+      "code": 0,
+      "build": 0,
+      "tests": 0,
+      "prompt": 0
+    },
+    "graded_at": "2026-11-06T09:19:49Z",
+    "flags": [],
+    "status": "invalid",
+    "pr": 40,
+    "updated_at": "2026-11-06T09:19:49Z",
     "stack": "unknown"
   },
   {
