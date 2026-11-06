@@ -713,9 +713,10 @@
     "breakdown": null,
     "graded_at": null,
     "flags": [],
-    "status": "building",
+    "status": "late",
     "pr": 42,
-    "updated_at": "2026-11-06T12:03:56Z"
+    "updated_at": "2026-11-06T12:04:25Z",
+    "stack": "unknown"
   },
   {
     "team": "kkmurerwa",
