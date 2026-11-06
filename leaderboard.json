@@ -702,9 +702,9 @@
     },
     "graded_at": "2026-11-06T09:19:49Z",
     "flags": [],
-    "status": "invalid",
+    "status": "building",
     "pr": 40,
-    "updated_at": "2026-11-06T09:19:49Z",
+    "updated_at": "2026-11-06T10:59:46Z",
     "stack": "unknown"
   },
   {
