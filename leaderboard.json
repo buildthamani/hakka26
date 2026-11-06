@@ -702,10 +702,10 @@
     },
     "graded_at": "2026-11-06T09:19:49Z",
     "flags": [],
-    "status": "building",
+    "status": "grading",
     "pr": 40,
-    "updated_at": "2026-11-06T10:59:46Z",
-    "stack": "unknown"
+    "updated_at": "2026-11-06T11:02:44Z",
+    "stack": "android"
   },
   {
     "team": "kkmurerwa",
